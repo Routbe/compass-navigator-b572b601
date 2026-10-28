@@ -12,11 +12,6 @@ const CTA_EFFECTS: { id: ProfileDisplayPrefs["ctaEffect"]; label: string }[] = [
   { id: "shimmer", label: "Shimmer" },
 ];
 
-const TONE_CLASS = {
-  red: "bg-red-500",
-  yellow: "bg-amber-500",
-  green: "bg-emerald-500",
-} as const;
 
 interface Props {
   blocks: ProfileBlock[];
@@ -106,7 +101,7 @@ export function ConversionCoachAccordion({
             aria-label="Conversiescore"
           >
             <div
-              className={cn("h-full transition-all", TONE_CLASS[audit.tone])}
+              className={"h-full bg-primary transition-all"}
               style={{ width: `${checklist.percent}%` }}
             />
           </div>
