@@ -26,6 +26,9 @@ export const Route = createFileRoute("/api_/public/qr/upload")({
         const file = form.get("file");
         if (!(file instanceof File)) return Response.json({ error: "Geen bestand ontvangen." }, { status: 400 });
         const days = Number(form.get("days") ?? 7);
+        const { checkActiveScopeUpload } = await import("@/lib/entitlement-engine.server");
+        const quota = await checkActiveScopeUpload(user.id, file.size).catch(() => ({ ok: false as const, status: 403 as const, error: "Storage Quota Exceeded" }));
+        if (!quota.ok) return Response.json({ error: quota.error }, { status: quota.status });
 
         try {
           const { createSharedFile } = await import("@/lib/storage/shared-files.server");
