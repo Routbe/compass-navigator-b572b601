@@ -5,7 +5,7 @@ import { socialHandleKey } from "@/lib/social-block-rules";
 import { useTranslation } from "react-i18next";
 import { ProfileYouTubeCard } from "@/components/profile/YouTubeCard";
 import { isProfileSectionKind, usesSectionFallback } from "@/lib/profile-section-blocks";
-import { NowPlaying, useNowPlaying } from "@/components/profile/NowPlaying";
+import { CustomStatusPill, NowPlaying, useNowPlaying } from "@/components/profile/NowPlaying";
 import { SnapchatProfile } from "@/components/profile/SnapchatProfile";
 import { SocialFeedCard } from "@/components/profile/SocialFeedCard";
 import { VerifiedAccountCheck } from "@/components/profile/VerifiedAccountCheck";
@@ -425,6 +425,7 @@ export function ProfileView({
         </h1>
         {profile.username && <ProfilePageTabs handle={profile.username} theme={t} />}
         {profile.username && <SnapchatProfile handle={profile.username} theme={t} buttonStyle={buttonStyle} ownerName={profile.display_name || profile.username} />}
+        {profile.username && <CustomStatusPill handle={profile.username} theme={t} />}
         {profile.username && <NowPlaying handle={profile.username} theme={t} />}
         {profile.username && <ProfileIntegrations handle={profile.username} theme={t} buttonStyle={buttonStyle} exclude={liveProviders} />}
         {profile.username && usesSectionFallback(profile.blocks, "widget:youtube") && <ProfileYouTubeCard handle={profile.username} theme={t} />}

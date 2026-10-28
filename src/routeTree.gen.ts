@@ -118,6 +118,7 @@ import { Route as ApiPublicWeatherRouteImport } from './routes/api_.public.weath
 import { Route as ApiSnapchatStartRouteImport } from './routes/api_.snapchat.start'
 import { Route as ApiSpotifyStartRouteImport } from './routes/api_.spotify.start'
 import { Route as ApiUploadPresignRouteImport } from './routes/api_.upload.presign'
+import { Route as ApiV1PresenceRouteImport } from './routes/api_.v1.presence'
 import { Route as ApiYoutubeStartRouteImport } from './routes/api_.youtube.start'
 import { Route as AuthMastodonCallbackRouteImport } from './routes/auth_.mastodon.callback'
 import { Route as RUAliasRouteImport } from './routes/r.u.$alias'
@@ -151,6 +152,7 @@ import { Route as ApiPublicMastodonStartRouteImport } from './routes/api_.public
 import { Route as ApiPublicOauthTokenRouteImport } from './routes/api_.public.oauth.token'
 import { Route as ApiPublicOauthUserinfoRouteImport } from './routes/api_.public.oauth.userinfo'
 import { Route as ApiPublicOgHandleRouteImport } from './routes/api_.public.og.$handle'
+import { Route as ApiPublicPresenceHandleRouteImport } from './routes/api_.public.presence.$handle'
 import { Route as ApiPublicQrUploadRouteImport } from './routes/api_.public.qr.upload'
 import { Route as ApiPublicSessionLogoutRouteImport } from './routes/api_.public.session.logout'
 import { Route as ApiPublicSmsInboundRouteImport } from './routes/api_.public.sms.inbound'
@@ -741,6 +743,11 @@ const ApiUploadPresignRoute = ApiUploadPresignRouteImport.update({
   path: '/api/upload/presign',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiV1PresenceRoute = ApiV1PresenceRouteImport.update({
+  id: '/api_/v1/presence',
+  path: '/api/v1/presence',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiYoutubeStartRoute = ApiYoutubeStartRouteImport.update({
   id: '/api_/youtube/start',
   path: '/api/youtube/start',
@@ -922,6 +929,11 @@ const ApiPublicOauthUserinfoRoute = ApiPublicOauthUserinfoRouteImport.update({
 const ApiPublicOgHandleRoute = ApiPublicOgHandleRouteImport.update({
   id: '/api_/public/og/$handle',
   path: '/api/public/og/$handle',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiPublicPresenceHandleRoute = ApiPublicPresenceHandleRouteImport.update({
+  id: '/api_/public/presence/$handle',
+  path: '/api/public/presence/$handle',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ApiPublicQrUploadRoute = ApiPublicQrUploadRouteImport.update({
@@ -1178,6 +1190,7 @@ export interface FileRoutesByFullPath {
   '/api/snapchat/start': typeof ApiSnapchatStartRoute
   '/api/spotify/start': typeof ApiSpotifyStartRoute
   '/api/upload/presign': typeof ApiUploadPresignRoute
+  '/api/v1/presence': typeof ApiV1PresenceRoute
   '/api/youtube/start': typeof ApiYoutubeStartRoute
   '/auth/mastodon/callback': typeof AuthMastodonCallbackRoute
   '/r/u/$alias': typeof RUAliasRoute
@@ -1212,6 +1225,7 @@ export interface FileRoutesByFullPath {
   '/api/public/oauth/token': typeof ApiPublicOauthTokenRoute
   '/api/public/oauth/userinfo': typeof ApiPublicOauthUserinfoRoute
   '/api/public/og/$handle': typeof ApiPublicOgHandleRoute
+  '/api/public/presence/$handle': typeof ApiPublicPresenceHandleRoute
   '/api/public/qr/upload': typeof ApiPublicQrUploadRoute
   '/api/public/session/logout': typeof ApiPublicSessionLogoutRoute
   '/api/public/sms/inbound': typeof ApiPublicSmsInboundRoute
@@ -1342,6 +1356,7 @@ export interface FileRoutesByTo {
   '/api/snapchat/start': typeof ApiSnapchatStartRoute
   '/api/spotify/start': typeof ApiSpotifyStartRoute
   '/api/upload/presign': typeof ApiUploadPresignRoute
+  '/api/v1/presence': typeof ApiV1PresenceRoute
   '/api/youtube/start': typeof ApiYoutubeStartRoute
   '/auth/mastodon/callback': typeof AuthMastodonCallbackRoute
   '/r/u/$alias': typeof RUAliasRoute
@@ -1375,6 +1390,7 @@ export interface FileRoutesByTo {
   '/api/public/oauth/token': typeof ApiPublicOauthTokenRoute
   '/api/public/oauth/userinfo': typeof ApiPublicOauthUserinfoRoute
   '/api/public/og/$handle': typeof ApiPublicOgHandleRoute
+  '/api/public/presence/$handle': typeof ApiPublicPresenceHandleRoute
   '/api/public/qr/upload': typeof ApiPublicQrUploadRoute
   '/api/public/session/logout': typeof ApiPublicSessionLogoutRoute
   '/api/public/sms/inbound': typeof ApiPublicSmsInboundRoute
@@ -1511,6 +1527,7 @@ export interface FileRoutesById {
   '/api_/snapchat/start': typeof ApiSnapchatStartRoute
   '/api_/spotify/start': typeof ApiSpotifyStartRoute
   '/api_/upload/presign': typeof ApiUploadPresignRoute
+  '/api_/v1/presence': typeof ApiV1PresenceRoute
   '/api_/youtube/start': typeof ApiYoutubeStartRoute
   '/auth_/mastodon/callback': typeof AuthMastodonCallbackRoute
   '/r/u/$alias': typeof RUAliasRoute
@@ -1545,6 +1562,7 @@ export interface FileRoutesById {
   '/api_/public/oauth/token': typeof ApiPublicOauthTokenRoute
   '/api_/public/oauth/userinfo': typeof ApiPublicOauthUserinfoRoute
   '/api_/public/og/$handle': typeof ApiPublicOgHandleRoute
+  '/api_/public/presence/$handle': typeof ApiPublicPresenceHandleRoute
   '/api_/public/qr/upload': typeof ApiPublicQrUploadRoute
   '/api_/public/session/logout': typeof ApiPublicSessionLogoutRoute
   '/api_/public/sms/inbound': typeof ApiPublicSmsInboundRoute
@@ -1681,6 +1699,7 @@ export interface FileRouteTypes {
     | '/api/snapchat/start'
     | '/api/spotify/start'
     | '/api/upload/presign'
+    | '/api/v1/presence'
     | '/api/youtube/start'
     | '/auth/mastodon/callback'
     | '/r/u/$alias'
@@ -1715,6 +1734,7 @@ export interface FileRouteTypes {
     | '/api/public/oauth/token'
     | '/api/public/oauth/userinfo'
     | '/api/public/og/$handle'
+    | '/api/public/presence/$handle'
     | '/api/public/qr/upload'
     | '/api/public/session/logout'
     | '/api/public/sms/inbound'
@@ -1845,6 +1865,7 @@ export interface FileRouteTypes {
     | '/api/snapchat/start'
     | '/api/spotify/start'
     | '/api/upload/presign'
+    | '/api/v1/presence'
     | '/api/youtube/start'
     | '/auth/mastodon/callback'
     | '/r/u/$alias'
@@ -1878,6 +1899,7 @@ export interface FileRouteTypes {
     | '/api/public/oauth/token'
     | '/api/public/oauth/userinfo'
     | '/api/public/og/$handle'
+    | '/api/public/presence/$handle'
     | '/api/public/qr/upload'
     | '/api/public/session/logout'
     | '/api/public/sms/inbound'
@@ -2013,6 +2035,7 @@ export interface FileRouteTypes {
     | '/api_/snapchat/start'
     | '/api_/spotify/start'
     | '/api_/upload/presign'
+    | '/api_/v1/presence'
     | '/api_/youtube/start'
     | '/auth_/mastodon/callback'
     | '/r/u/$alias'
@@ -2047,6 +2070,7 @@ export interface FileRouteTypes {
     | '/api_/public/oauth/token'
     | '/api_/public/oauth/userinfo'
     | '/api_/public/og/$handle'
+    | '/api_/public/presence/$handle'
     | '/api_/public/qr/upload'
     | '/api_/public/session/logout'
     | '/api_/public/sms/inbound'
@@ -2147,6 +2171,7 @@ export interface RootRouteChildren {
   ApiSnapchatStartRoute: typeof ApiSnapchatStartRoute
   ApiSpotifyStartRoute: typeof ApiSpotifyStartRoute
   ApiUploadPresignRoute: typeof ApiUploadPresignRoute
+  ApiV1PresenceRoute: typeof ApiV1PresenceRoute
   ApiYoutubeStartRoute: typeof ApiYoutubeStartRoute
   AuthMastodonCallbackRoute: typeof AuthMastodonCallbackRoute
   RUAliasRoute: typeof RUAliasRoute
@@ -2173,6 +2198,7 @@ export interface RootRouteChildren {
   ApiPublicOauthTokenRoute: typeof ApiPublicOauthTokenRoute
   ApiPublicOauthUserinfoRoute: typeof ApiPublicOauthUserinfoRoute
   ApiPublicOgHandleRoute: typeof ApiPublicOgHandleRoute
+  ApiPublicPresenceHandleRoute: typeof ApiPublicPresenceHandleRoute
   ApiPublicQrUploadRoute: typeof ApiPublicQrUploadRoute
   ApiPublicSessionLogoutRoute: typeof ApiPublicSessionLogoutRoute
   ApiPublicSmsInboundRoute: typeof ApiPublicSmsInboundRoute
@@ -2951,6 +2977,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiUploadPresignRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api_/v1/presence': {
+      id: '/api_/v1/presence'
+      path: '/api/v1/presence'
+      fullPath: '/api/v1/presence'
+      preLoaderRoute: typeof ApiV1PresenceRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api_/youtube/start': {
       id: '/api_/youtube/start'
       path: '/api/youtube/start'
@@ -3180,6 +3213,13 @@ declare module '@tanstack/react-router' {
       path: '/api/public/og/$handle'
       fullPath: '/api/public/og/$handle'
       preLoaderRoute: typeof ApiPublicOgHandleRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api_/public/presence/$handle': {
+      id: '/api_/public/presence/$handle'
+      path: '/api/public/presence/$handle'
+      fullPath: '/api/public/presence/$handle'
+      preLoaderRoute: typeof ApiPublicPresenceHandleRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/api_/public/qr/upload': {
@@ -3666,6 +3706,7 @@ const rootRouteChildren: RootRouteChildren = {
   ApiSnapchatStartRoute: ApiSnapchatStartRoute,
   ApiSpotifyStartRoute: ApiSpotifyStartRoute,
   ApiUploadPresignRoute: ApiUploadPresignRoute,
+  ApiV1PresenceRoute: ApiV1PresenceRoute,
   ApiYoutubeStartRoute: ApiYoutubeStartRoute,
   AuthMastodonCallbackRoute: AuthMastodonCallbackRoute,
   RUAliasRoute: RUAliasRoute,
@@ -3693,6 +3734,7 @@ const rootRouteChildren: RootRouteChildren = {
   ApiPublicOauthTokenRoute: ApiPublicOauthTokenRoute,
   ApiPublicOauthUserinfoRoute: ApiPublicOauthUserinfoRoute,
   ApiPublicOgHandleRoute: ApiPublicOgHandleRoute,
+  ApiPublicPresenceHandleRoute: ApiPublicPresenceHandleRoute,
   ApiPublicQrUploadRoute: ApiPublicQrUploadRoute,
   ApiPublicSessionLogoutRoute: ApiPublicSessionLogoutRoute,
   ApiPublicSmsInboundRoute: ApiPublicSmsInboundRoute,

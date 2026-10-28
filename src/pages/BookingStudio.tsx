@@ -3,7 +3,6 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { toast } from "sonner";
 import { ArrowUp, CalendarClock, Check, Copy, Link2, Loader2, RefreshCw, Trash2, X } from "lucide-react";
-import { AppLayout } from "@/components/layout/AppLayout";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -38,31 +37,58 @@ function relative(iso: string | null, locale: string) {
 
 import { PrivacyBadge } from "@/components/PrivacyBadge";
 
-export default function BookingStudio() {
+/** Booking management, rendered inside the Studio page switcher (Inhoud | Vormgeving | Statistieken). */
+export function BookingStudioPanel() {
   const { t } = useI18n();
   const q = useStudio();
+  if (q.isLoading || !q.data) return <div className="flex justify-center py-16"><Loader2 className="h-6 w-6 animate-spin text-muted-foreground" /></div>;
+  if (!q.data.ready) return <p className="py-10 text-center text-sm text-muted-foreground">{t("booking.err.generic")}</p>;
+  const data = q.data;
+  const confirmed = data.bookings.filter((b) => b.status === "confirmed").length;
+  const requested = data.bookings.filter((b) => b.status === "requested").length;
   return (
-    <AppLayout title={t("booking.title")} description={t("booking.description")} crumbs={[{ label: "Studio", to: "/studio" }, { label: t("booking.title") }]}>
-      {q.isLoading || !q.data ? (
-        <div className="flex justify-center py-16"><Loader2 className="h-6 w-6 animate-spin text-muted-foreground" /></div>
-      ) : !q.data.ready ? (
-        <p className="py-10 text-center text-sm text-muted-foreground">{t("booking.err.generic")}</p>
-      ) : (
-        <Tabs defaultValue="requests" className="space-y-6">
-          <PrivacyBadge kind="zk-pii" />
-          <TabsList className="flex w-full flex-wrap justify-start gap-1">
-            <TabsTrigger value="requests">{t("booking.tab.requests")}</TabsTrigger>
-            <TabsTrigger value="types">{t("booking.tab.types")}</TabsTrigger>
-            <TabsTrigger value="availability">{t("booking.tab.availability")}</TabsTrigger>
-            <TabsTrigger value="calendars">{t("booking.tab.calendars")}</TabsTrigger>
-          </TabsList>
-          <TabsContent value="requests"><Requests data={q.data} /></TabsContent>
-          <TabsContent value="types"><Types data={q.data} /></TabsContent>
-          <TabsContent value="availability"><Availability data={q.data} /></TabsContent>
-          <TabsContent value="calendars"><Calendars data={q.data} /></TabsContent>
+    <Tabs defaultValue="content" className="space-y-5">
+      <TabsList className="grid w-full grid-cols-3">
+        <TabsTrigger value="content">Inhoud</TabsTrigger>
+        <TabsTrigger value="design">Vormgeving</TabsTrigger>
+        <TabsTrigger value="stats">Statistieken</TabsTrigger>
+      </TabsList>
+      <TabsContent value="content">
+        <Tabs defaultValue="requests" className="space-y-4">
+          <div className="flex flex-wrap items-center justify-between gap-2">
+            <TabsList className="flex h-auto w-full flex-wrap justify-start gap-1 sm:w-auto">
+              <TabsTrigger value="requests">{t("booking.tab.requests")}</TabsTrigger>
+              <TabsTrigger value="types">{t("booking.tab.types")}</TabsTrigger>
+              <TabsTrigger value="availability">{t("booking.tab.availability")}</TabsTrigger>
+              <TabsTrigger value="calendars">{t("booking.tab.calendars")}</TabsTrigger>
+            </TabsList>
+            <PrivacyBadge kind="zk-pii" />
+          </div>
+          <TabsContent value="requests"><Requests data={data} /></TabsContent>
+          <TabsContent value="types"><Types data={data} /></TabsContent>
+          <TabsContent value="availability"><Availability data={data} /></TabsContent>
+          <TabsContent value="calendars"><Calendars data={data} /></TabsContent>
         </Tabs>
-      )}
-    </AppLayout>
+      </TabsContent>
+      <TabsContent value="design">
+        <Panel><p className="text-sm text-muted-foreground">Je boekingspagina neemt het thema, de achtergrond en de knopstijl van je hoofdprofiel over, zodat bezoekers één herkenbare stijl zien. Pas die aan via Vormgeving op je hoofdprofiel.</p></Panel>
+      </TabsContent>
+      <TabsContent value="stats">
+        <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+          {[
+            ["Boekingstypes", data.eventTypes.length],
+            ["Aanvragen", requested],
+            ["Bevestigd", confirmed],
+            ["Totaal", data.bookings.length],
+          ].map(([label, n]) => (
+            <div key={label} className="rounded-2xl border border-border bg-card p-4">
+              <p className="text-xs text-muted-foreground">{label}</p>
+              <p className="mt-1 text-2xl font-semibold tabular-nums">{n}</p>
+            </div>
+          ))}
+        </div>
+      </TabsContent>
+    </Tabs>
   );
 }
 

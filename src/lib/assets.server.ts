@@ -85,6 +85,9 @@ export async function uploadAsset(input: { userId: string; bytes: Uint8Array; fi
   if (!withinQuota(await usage(input.userId), input.bytes.byteLength)) {
     throw new Error("Opslaglimiet bereikt (50 bestanden of 500 MB).");
   }
+  const { checkActiveScopeUpload } = await import("./entitlement-engine.server");
+  const scopeQuota = await checkActiveScopeUpload(input.userId, input.bytes.byteLength);
+  if (!scopeQuota.ok) throw new Error("Storage Quota Exceeded");
   const { isLifetime, expiresAt } = retentionFor(await tierOf(input.userId), input.days);
   const key = `users/${input.userId}/assets/${crypto.randomUUID()}.${extFor(type)}`;
   await putObject("client", key, input.bytes, { contentType: type, cacheControl: "private, max-age=0" });

@@ -15,6 +15,9 @@ import { getVerificationState } from "@/lib/verification.functions";
 import { verifiedTabUnlocked } from "@/lib/studio-access";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { VerificationPanel } from "@/components/dashboard/VerificationPanel";
+import { BookingStudioPanel } from "@/pages/BookingStudio";
+
+type PageMode = "profile" | "tip" | "booking";
 
 /** /studio — the dedicated Profile Hub (link-in-bio) workspace. */
 export default function Studio() {
@@ -23,7 +26,10 @@ export default function Studio() {
   const nav = useNavigate();
   // Privacy Alias is the default; the verified profile is a premium tab.
   const [variant, setVariant] = useState<ProfileVariant>("alias");
-  const [pageMode, setPageMode] = useState<"profile" | "tip">("profile");
+  const [pageMode, setPageMode] = useState<PageMode>("profile");
+  useEffect(() => {
+    if (new URLSearchParams(window.location.search).get("page") === "booking") setPageMode("booking");
+  }, []);
   const [pages, setPages] = useState({ tipEnabled: false, handle: "" });
   const updatePages = useCallback((next: { tipEnabled: boolean; handle: string }) => setPages(next), []);
   const fetchState = useServerFn(getVerificationState);
@@ -39,6 +45,9 @@ export default function Studio() {
     if (!loading && !user) nav("/auth/sign-in", { replace: true });
   }, [user, loading, nav]);
 
+  const modeIcon = (m: PageMode, Fallback: typeof Sparkles) => m === "tip" ? HeartHandshake : m === "booking" ? CalendarClock : Fallback;
+  const modeLabel = (m: PageMode, fallback: string) => m === "tip" ? t("studio.mode.tip") : m === "booking" ? t("studio.nav.booking") : fallback;
+  const modeSuffix = (m: PageMode) => m === "tip" ? "/tip" : m === "booking" ? "/booking" : "";
   const tabs = [
     { id: "alias" as ProfileVariant, label: t("studio.profile.alias"), hint: "rout.be/u/handle", Icon: Sparkles, locked: false },
     { id: "verified" as ProfileVariant, label: t("studio.profile.verified"), hint: "rout.be/handle", Icon: BadgeCheck, locked: !unlocked },
@@ -66,20 +75,17 @@ export default function Studio() {
               const selected = variant === id;
               const select = () => { setVariant(id); setPageMode("profile"); };
               const trigger = <Button variant="ghost" type="button" aria-pressed={selected} onClick={select} className={`h-auto min-h-12 min-w-0 flex-1 justify-start gap-2 whitespace-normal rounded-lg px-3 py-2 text-left shadow-none ${selected ? "bg-foreground text-background hover:bg-foreground hover:text-background" : "bg-transparent text-muted-foreground hover:bg-secondary/60 hover:text-foreground"}`}>
-                {selected && pageMode === "tip" ? <HeartHandshake className="size-4 shrink-0" /> : <Icon className="size-4 shrink-0" />}
-                <span className="min-w-0 flex-1"><span className="block text-sm font-medium">{selected && pageMode === "tip" ? t("studio.mode.tip") : label}</span><span className="block break-all font-mono text-xs opacity-70">{selected && pages.handle ? `rout.be/${id === "alias" ? "u/" : ""}${pages.handle}${pageMode === "tip" ? "/tip" : ""}` : hint}</span></span>
+                <Icon className="size-4 shrink-0" />
+                <span className="min-w-0 flex-1"><span className="block text-sm font-medium">{label}</span><span className="block break-all font-mono text-xs opacity-70">{selected && pages.handle ? `rout.be/${id === "alias" ? "u/" : ""}${pages.handle}` : hint}</span></span>
                 {locked && <Lock className="size-3.5 shrink-0" aria-label={t("studio.common.locked")} />}
               </Button>;
-              if (!selected || id !== "verified" || (!pages.tipEnabled && pageMode !== "tip")) return <div key={id} className="flex min-w-0 flex-1">{trigger}</div>;
+              if (!selected || id !== "verified") return <div key={id} className="flex min-w-0 flex-1">{trigger}</div>;
               return <DropdownMenu key={id}><DropdownMenuTrigger asChild><Button variant="ghost" aria-label={t("studio.mode.pages")} className="h-auto min-h-12 min-w-0 flex-1 justify-start gap-2 whitespace-normal rounded-lg bg-foreground px-3 py-2 text-left text-background hover:bg-foreground hover:text-background">
-                {pageMode === "tip" ? <HeartHandshake className="size-4 shrink-0" /> : <Icon className="size-4 shrink-0" />}<span className="min-w-0 flex-1"><span className="block text-sm font-medium">{pageMode === "tip" ? t("studio.mode.tip") : label}</span><span className="block break-all font-mono text-xs opacity-70">rout.be/{pages.handle}{pageMode === "tip" ? "/tip" : ""}</span></span><ChevronDown className="size-4 shrink-0" />
+                {(() => { const M = modeIcon(pageMode, Icon); return <M className="size-4 shrink-0" />; })()}<span className="min-w-0 flex-1"><span className="block text-sm font-medium">{modeLabel(pageMode, label)}</span><span className="block break-all font-mono text-xs opacity-70">rout.be/{pages.handle}{modeSuffix(pageMode)}</span></span><ChevronDown className="size-4 shrink-0" />
               </Button></DropdownMenuTrigger><DropdownMenuContent align="start" className="w-72 max-w-[calc(100vw-24px)]">
-                {(["profile", "tip"] as const).filter(mode => mode === "profile" || pages.tipEnabled).map(mode => <DropdownMenuItem key={mode} onSelect={() => setPageMode(mode)}>{mode === "profile" ? <BadgeCheck className="size-4" /> : <HeartHandshake className="size-4" />}<span className="flex-1">{t(`studio.mode.${mode}`)}</span>{pageMode === mode && <Check className="size-4" />}</DropdownMenuItem>)}
+                {(["profile", "tip", "booking"] as const).filter(mode => mode !== "tip" || pages.tipEnabled).map(mode => { const M = modeIcon(mode, BadgeCheck); return <DropdownMenuItem key={mode} onSelect={() => setPageMode(mode)}><M className="size-4" /><span className="flex-1">{modeLabel(mode, t("studio.mode.profile"))}</span>{pageMode === mode && <Check className="size-4" />}</DropdownMenuItem>; })}
               </DropdownMenuContent></DropdownMenu>;
             })}
-            <Button variant="outline" type="button" onClick={() => nav("/studio/booking")} className="h-auto min-h-12 gap-2 rounded-lg px-3 py-2">
-              <CalendarClock className="size-4 shrink-0" /><span className="text-sm font-medium">{t("studio.nav.booking")}</span>
-            </Button>
           </div>
           <ErrorBoundary label={t("studio.page.title")} inline>
             {variant === "verified" && !unlocked ? (
@@ -89,7 +95,12 @@ export default function Studio() {
                 <LockedVerifiedTab />
               )
             ) : (
-              <ProfileEditor key={variant} variant={variant} pageMode={pageMode} onPagesChange={updatePages} />
+              <>
+                {pageMode === "booking" && <BookingStudioPanel />}
+                <div hidden={pageMode === "booking"}>
+                  <ProfileEditor key={variant} variant={variant} pageMode={pageMode === "booking" ? "profile" : pageMode} onPagesChange={updatePages} />
+                </div>
+              </>
             )}
           </ErrorBoundary>
         </div>

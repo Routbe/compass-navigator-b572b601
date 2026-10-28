@@ -65,3 +65,13 @@ export async function redeemPlusWorkspace(userId: string, workspaceId: string): 
     on conflict (scope_type, scope_id, entitlement_key) do update set value = 'plus'`;
   return { ok: true };
 }
+
+/** Shared quota gate for every upload path (presign and direct uploads) in the caller's active scope. */
+export async function checkActiveScopeUpload(userId: string, bytes: number): Promise<{ ok: true } | { ok: false; status: 403; error: string }> {
+  const { resolveActiveWorkspace } = await import("./workspaces.server");
+  const { decidePresign } = await import("./entitlement-engine");
+  const { workspaceId } = await resolveActiveWorkspace(userId);
+  const scope: Scope = workspaceId ? { type: "workspace", id: workspaceId } : { type: "user", id: userId };
+  const d = decidePresign(await loadScopeInput(scope), await scopeUsedBytes(scope), bytes);
+  return d.ok ? { ok: true } : { ok: false, status: 403, error: d.error };
+}

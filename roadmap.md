@@ -1,6 +1,8 @@
 # Roadmap
 - [x] Fase 1: kleinere rondleiding-knop, Coach verkleint tot bolletje met %-ring
-- [ ] Fase 2: Conversie Coach regels per paginatype + tests
-- [ ] Fase 3: alle uploads via presign, video-links, concept/publiceren
-- [ ] Fase 4: Boekingen in Pagina-Wisselaar, /studio/bookings weg
-- [ ] Fase 5: Live-status engine (heeft database-sleutel nodig voor migraties)
+- [x] Fase 2: één Coach-score met checklist (verificatie + extra pagina meegeteld)
+- [x] Fase 3: opslaglimiet op alle uploadpaden; video-links gevalideerd; concept/publiceren bestond al
+- [x] Fase 4: Boekingen in Pagina-Wisselaar met Inhoud | Vormgeving | Statistieken
+- [x] Fase 5: eigen status, API-sleutel, privacyregels, publiek endpoint
+- [ ] Migratie db/106 draaien (wacht op database-sleutel; tabel wordt ook automatisch aangemaakt)
+- [ ] Video-upload (Pro) naar Scaleway: wacht op opslagsleutels om te testen

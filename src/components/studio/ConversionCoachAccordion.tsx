@@ -1,6 +1,6 @@
 import { AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { ConversionCoach } from "@/components/dashboard/ConversionCoach";
-import { auditProfile, hasPrimaryAction, type ConversionFix } from "@/lib/conversion-coach";
+import { analyzePageConversion, auditProfile, hasPrimaryAction, type ConversionFix } from "@/lib/conversion-coach";
 import type { ProfileBlock } from "@/lib/profile";
 import type { ProfileDisplayPrefs } from "@/lib/profile-display";
 import { cn } from "@/lib/utils";
@@ -12,11 +12,6 @@ const CTA_EFFECTS: { id: ProfileDisplayPrefs["ctaEffect"]; label: string }[] = [
   { id: "shimmer", label: "Shimmer" },
 ];
 
-const TONE_CLASS = {
-  red: "bg-red-500",
-  yellow: "bg-amber-500",
-  green: "bg-emerald-500",
-} as const;
 
 interface Props {
   blocks: ProfileBlock[];
@@ -28,6 +23,8 @@ interface Props {
     key: K,
     value: ProfileDisplayPrefs[K],
   ) => void;
+  verified?: boolean;
+  extraPageActive?: boolean;
   /** Voegt een blok toe (quick fix). */
   onAddKind: (kind: string) => void;
 }
@@ -46,7 +43,10 @@ export function ConversionCoachAccordion({
   prefs,
   onPrefChange,
   onAddKind,
+  verified,
+  extraPageActive,
 }: Props) {
+  const checklist = analyzePageConversion({ blocks, avatarUrl, bio, verified, extraPageActive });
   const audit = auditProfile({
     blocks,
     avatarUrl,
@@ -82,7 +82,7 @@ export function ConversionCoachAccordion({
         <span className="flex flex-1 items-center justify-between gap-3 pr-2">
           <span className="text-base font-medium">💡 Conversie Coach &amp; Optimalisatie</span>
           <span className="rounded-full border border-border px-2 py-0.5 text-[10px] text-muted-foreground">
-            {audit.score}%
+            {checklist.percent}%
           </span>
         </span>
       </AccordionTrigger>
@@ -90,22 +90,32 @@ export function ConversionCoachAccordion({
         <section className="space-y-2">
           <div className="flex items-center justify-between text-xs">
             <span className="font-medium">{audit.label}</span>
-            <span className="text-muted-foreground">{audit.score}/100</span>
+            <span className="text-muted-foreground">{checklist.percent}% voltooid</span>
           </div>
           <div
             className="h-2 w-full overflow-hidden rounded-full bg-muted"
             role="progressbar"
-            aria-valuenow={audit.score}
+            aria-valuenow={checklist.percent}
             aria-valuemin={0}
             aria-valuemax={100}
             aria-label="Conversiescore"
           >
             <div
-              className={cn("h-full transition-all", TONE_CLASS[audit.tone])}
-              style={{ width: `${audit.score}%` }}
+              className={"h-full bg-primary transition-all"}
+              style={{ width: `${checklist.percent}%` }}
             />
           </div>
         </section>
+
+        <ul className="space-y-1.5" aria-label="Checklist">
+          {checklist.checks.map((c) => (
+            <li key={c.id} className="flex items-start gap-2 text-xs">
+              <span aria-hidden className={c.ok ? "text-primary" : "text-muted-foreground"}>{c.ok ? "✓" : "○"}</span>
+              <span className={c.ok ? "text-muted-foreground line-through" : ""}>{c.advice}</span>
+              <span className="ml-auto shrink-0 tabular-nums text-muted-foreground">+{c.weight}</span>
+            </li>
+          ))}
+        </ul>
 
         {audit.fixes.length > 0 && (
           <section className="space-y-2">
