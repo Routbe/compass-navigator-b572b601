@@ -18,8 +18,8 @@ export function ConversionCoachFab(props: Props) {
   const [compact, setCompact] = useState(false);
   const isMobile = useIsMobile();
   const idle = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const { blocks, avatarUrl, bio } = props;
-  const score = analyzePageConversion({ blocks, avatarUrl, bio }).percent;
+  const { blocks, avatarUrl, bio, verified, extraPageActive } = props;
+  const score = analyzePageConversion({ blocks, avatarUrl, bio, verified, extraPageActive }).percent;
 
   useEffect(() => {
     setHidden(window.localStorage.getItem(HIDE_KEY) === "1");

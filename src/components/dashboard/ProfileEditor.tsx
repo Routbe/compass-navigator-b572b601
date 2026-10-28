@@ -1132,6 +1132,8 @@ export function ProfileEditor({ variant = "verified", pageMode = "profile", onPa
                 prefs={prefs}
                 onPrefChange={setPref}
                 onAddKind={(kind) => addBlock(kind)}
+                verified={verified}
+                extraPageActive={tipEnabled}
               />
           )}
 
