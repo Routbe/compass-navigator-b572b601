@@ -61,7 +61,7 @@ export default function Studio() {
       ) : (
         <div className="relative flex flex-1 flex-col space-y-6 pb-8">
           <FirstUseTour area="studio" userId={user.id} />
-          <div data-tour="studio-pages" className="!mt-0 flex flex-wrap gap-2 bg-transparent p-1 pr-10">
+          <div data-tour="studio-pages" className="!mt-0 flex flex-wrap gap-2 bg-transparent p-1 pr-7">
             {tabs.map(({ id, label, hint, Icon, locked }) => {
               const selected = variant === id;
               const select = () => { setVariant(id); setPageMode("profile"); };

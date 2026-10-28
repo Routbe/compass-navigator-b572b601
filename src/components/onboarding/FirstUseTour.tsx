@@ -19,7 +19,7 @@ export function FirstUseTour({ area, userId }: { area: "studio" | "dashboard"; u
   }, [area, userId, get]);
   const finish = useCallback(() => { setOpen(false); void complete({ data: { area } }).catch(() => {}); }, [area, complete]);
   return <>
-    <Button variant="ghost" size="icon" onClick={() => setOpen(true)} aria-label={t("studio.tour.restart")} title={t("studio.tour.restart")} className="absolute right-0 top-0 h-8 w-8 text-muted-foreground"><CircleHelp className="h-4 w-4" /></Button>
+    <Button variant="ghost" size="icon" onClick={() => setOpen(true)} aria-label={t("studio.tour.restart")} title={t("studio.tour.restart")} className="absolute right-0 top-0 h-6 w-6 rounded-full text-muted-foreground/60 hover:text-foreground"><CircleHelp className="h-3.5 w-3.5" /></Button>
     {open && <AnchoredTour onDone={finish} labels={{ skip: t("studio.tour.skip"), back: t("studio.tour.back"), next: t("studio.tour.next"), done: t("studio.tour.done") }} steps={steps.map(id => ({
       title: t(`studio.tour.${area}.${id}.title`), body: t(`studio.tour.${area}.${id}.body`),
       target: `[data-tour="${area === "dashboard" ? `dashboard-${id}` : id === "content" ? "studio-tab-links" : id === "design" ? "studio-tab-design" : `studio-${id}`}"]`,
