@@ -19,6 +19,7 @@ import type { BioProvider } from "@/lib/open-web-rules";
 import { VerifyOwnership } from "@/components/studio/VerifyOwnership";
 import { OfficialVerifyButton, hasOfficialVerify } from "@/components/studio/OfficialVerifyButton";
 import { isBioVerifiable } from "@/lib/open-web-rules";
+import { CustomPresencePanel } from "@/components/studio/CustomPresencePanel";
 
 /** Telt de actieve live diensten (Spotify + kluisrijen met live data). */
 export function useLiveIntegrationCount(): number {
@@ -274,6 +275,7 @@ export function LiveIntegrations() {
         <Plus className="h-4 w-4" aria-hidden /> Live integratie toevoegen
       </button>
       <AddLiveIntegrationModal open={adding} onClose={() => setAdding(false)} />
+      <CustomPresencePanel />
     </div>
   );
 }
