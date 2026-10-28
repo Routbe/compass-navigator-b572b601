@@ -62,7 +62,7 @@ export function ExtraPagesPanel({ handle, onTipEnabledChange }: { handle: string
           <p className="text-sm font-medium">Boekingen</p>
           <p className="text-xs text-muted-foreground">Actief zodra je een boekingstype publiceert.</p>
         </div>
-        <Button asChild variant="outline" size="sm"><Link to="/studio/booking">Beheren</Link></Button>
+        <Button asChild variant="outline" size="sm"><Link to="/studio" search={{ page: "booking" } as never}>Beheren</Link></Button>
       </li>
     </ul>
   );
