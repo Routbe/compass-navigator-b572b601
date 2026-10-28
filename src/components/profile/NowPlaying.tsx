@@ -199,3 +199,24 @@ export function NowPlaying({ handle, theme }: { handle: string; theme: Theme }) 
   );
 }
 
+
+/** Custom live status pill (set from Studio or the presence API). Polls our own cached endpoint only. */
+export function CustomStatusPill({ handle, theme }: { handle: string; theme: Theme }) {
+  const q = useQuery({
+    queryKey: ["custom-presence", handle],
+    queryFn: async (): Promise<{ online: boolean; status?: string; icon?: string | null }> => {
+      const r = await fetch(`/api/public/presence/${encodeURIComponent(handle)}`);
+      return r.ok ? r.json() : { online: false };
+    },
+    refetchInterval: 30_000,
+    staleTime: 15_000,
+  });
+  if (!q.data?.online || !q.data.status) return null;
+  return (
+    <div className={`mx-auto flex w-fit max-w-full items-center gap-2 rounded-full border px-3 py-1.5 text-xs ${theme.card} ${theme.border} ${theme.text}`} aria-live="polite">
+      <span className="relative flex h-2 w-2"><span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-primary opacity-60" /><span className="relative inline-flex h-2 w-2 rounded-full bg-primary" /></span>
+      {q.data.icon && <span aria-hidden>{q.data.icon}</span>}
+      <span className="truncate">{q.data.status}</span>
+    </div>
+  );
+}
