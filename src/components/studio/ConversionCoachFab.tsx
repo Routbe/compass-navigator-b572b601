@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState, type ComponentProps } from "react";
-import { ChevronLeft, Lightbulb } from "lucide-react";
+import { Lightbulb } from "lucide-react";
 import { Accordion } from "@/components/ui/accordion";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
@@ -47,12 +47,18 @@ export function ConversionCoachFab(props: Props) {
       {hidden ? (
         <button
           type="button"
-          onClick={() => setHide(false)}
-          aria-label="Conversie Coach tonen"
+          onClick={() => { setHide(false); setOpen(true); }}
+          aria-label={`Conversie Coach openen, ${score}% voltooid`}
           style={bottom}
-          className="fixed right-0 z-40 flex h-12 w-6 items-center justify-center rounded-l-lg border border-r-0 border-border bg-card shadow-md md:!bottom-5"
+          className="fixed right-3 z-40 flex h-11 w-11 touch-manipulation items-center justify-center rounded-full border border-border bg-card shadow-md md:!bottom-5 md:right-5"
         >
-          <ChevronLeft className="h-4 w-4 text-primary" aria-hidden />
+          <svg viewBox="0 0 40 40" className="absolute inset-0 -rotate-90" aria-hidden>
+            <circle cx="20" cy="20" r="17" fill="none" strokeWidth="3" className="stroke-muted" />
+            <circle cx="20" cy="20" r="17" fill="none" strokeWidth="3" strokeLinecap="round"
+              className="stroke-primary transition-[stroke-dashoffset] duration-500"
+              strokeDasharray={2 * Math.PI * 17} strokeDashoffset={2 * Math.PI * 17 * (1 - Math.min(100, Math.max(0, score)) / 100)} />
+          </svg>
+          <span className="text-[10px] font-bold tabular-nums">{score}%</span>
         </button>
       ) : (
         <button
@@ -96,7 +102,7 @@ export function ConversionCoachFab(props: Props) {
             className="mt-4 text-muted-foreground"
             onClick={() => { setHide(true); setOpen(false); }}
           >
-            Knop verbergen
+            Verkleinen tot bolletje
           </Button>
         </SheetContent>
       </Sheet>
