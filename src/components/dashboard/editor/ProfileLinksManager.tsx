@@ -210,6 +210,7 @@ export function ProfileLinksManager({
                 >
                   {section ? <SectionIcon className="h-4 w-4 text-current" aria-hidden /> : <SocialPlatformIcon
                     source={b.value?.trim() || b.kind}
+                    kind={b.kind}
                     iconMode={b.iconMode}
                     className="h-4 w-4 text-current"
                   />}

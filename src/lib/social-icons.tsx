@@ -249,8 +249,11 @@ export function SocialPlatformIcon({
   className,
   monochrome = false,
   iconMode = "favicon",
+  kind,
 }: {
   source: string;
+  /** Platformsleutel (bv. "mastodon") als terugval wanneer de URL een eigen domein is. */
+  kind?: string;
   className?: string;
   /** Forceert themakleur in plaats van de merkkleur. */
   monochrome?: boolean;
@@ -259,7 +262,20 @@ export function SocialPlatformIcon({
 }) {
   const [faviconFailed, setFaviconFailed] = useState(false);
   const Icon = getSocialPlatformIcon(source);
-  const brand = monochrome || isEmailLike(source) ? null : lookupBrandIcon(source);
+  const brand = isEmailLike(source) ? null : lookupBrandIcon(source) ?? (kind ? lookupBrandIcon(kind) : null);
+  if (brand) {
+    // Officieel merkteken altijd tekenen, nooit een generieke wereldbol/link.
+    return (
+      <svg
+        viewBox={brand.viewBox ?? "0 0 24 24"}
+        className={cn("h-5 w-5 shrink-0", monochrome ? "text-foreground" : "", className)}
+        style={monochrome ? { fill: "currentColor" } : { fill: brand.color }}
+        aria-hidden
+      >
+        <path d={brand.path} />
+      </svg>
+    );
+  }
   const host = Icon === Globe && iconMode !== "globe" ? websiteHost(source) : null;
   if (host && !faviconFailed) {
     return (
@@ -276,8 +292,7 @@ export function SocialPlatformIcon({
   }
   return (
     <Icon
-      className={cn("h-5 w-5 shrink-0", brand ? "" : "text-foreground", className)}
-      style={brand ? { color: brand.color } : undefined}
+      className={cn("h-5 w-5 shrink-0 text-foreground", className)}
       aria-hidden
     />
   );
