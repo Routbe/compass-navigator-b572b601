@@ -21,7 +21,9 @@ import { Link, useNavigate } from "@/lib/router-compat";
 import { useAuth } from "@/hooks/useAuth";
 import { clearAdminRoleCache } from "@/hooks/useIsAdmin";
 import { UserAvatar } from "@/components/UserAvatar";
-import { useWorkspaceContext } from "@/components/WorkspaceSwitcher";
+import { useScope, useWorkspaceContext } from "@/components/WorkspaceSwitcher";
+import { DropdownMenuSub, DropdownMenuSubContent, DropdownMenuSubTrigger } from "@/components/ui/dropdown-menu";
+import { ArrowLeftRight, Check as CheckIcon, Plus as PlusIcon, User as UserIcon, Users as UsersIcon } from "lucide-react";
 import { canUseDeveloperTools } from "@/lib/workspace-rules";
 import { getMyAccount } from "@/lib/account.functions";
 
@@ -32,6 +34,7 @@ import { getMyAccount } from "@/lib/account.functions";
 export function ProfileMenu() {
   const { data: wsCtx } = useWorkspaceContext();
   const devTools = canUseDeveloperTools(wsCtx?.activeRole ?? null);
+  const scopeApi = useScope();
   const { user, signOut, loading } = useAuth();
 
   const nav = useNavigate();
@@ -140,6 +143,30 @@ export function ProfileMenu() {
             </div>
             <p className="truncate text-xs text-muted-foreground">{user.email}</p>
           </div>
+          <DropdownMenuSub>
+            <DropdownMenuSubTrigger className="gap-2" disabled={scopeApi.busy} aria-label="Wissel van account of workspace">
+              {scopeApi.active ? <UsersIcon className="h-4 w-4 shrink-0" aria-hidden /> : <UserIcon className="h-4 w-4 shrink-0" aria-hidden />}
+              <span className="truncate">{scopeApi.active ? scopeApi.active.name : "Persoonlijk"}</span>
+              <ArrowLeftRight className="ml-auto h-3.5 w-3.5 text-muted-foreground" aria-hidden />
+            </DropdownMenuSubTrigger>
+            <DropdownMenuSubContent className="w-60 bg-card">
+              <DropdownMenuItem onClick={() => scopeApi.switchTo(null)} className="gap-2">
+                <UserIcon className="h-4 w-4" aria-hidden /> Persoonlijk
+                {!scopeApi.active && <CheckIcon className="ml-auto h-4 w-4" aria-hidden />}
+              </DropdownMenuItem>
+              {scopeApi.workspaces.map((w) => (
+                <DropdownMenuItem key={w.id} onClick={() => scopeApi.switchTo(w.id)} className="gap-2">
+                  <UsersIcon className="h-4 w-4" aria-hidden />
+                  <span className="truncate">{w.name}</span>
+                  {w.id === scopeApi.active?.id && <CheckIcon className="ml-auto h-4 w-4" aria-hidden />}
+                </DropdownMenuItem>
+              ))}
+              <DropdownMenuSeparator />
+              <DropdownMenuItem onClick={scopeApi.newWorkspace} className="gap-2">
+                <PlusIcon className="h-4 w-4" aria-hidden /> Nieuwe workspace
+              </DropdownMenuItem>
+            </DropdownMenuSubContent>
+          </DropdownMenuSub>
           <DropdownMenuSeparator />
           <DropdownMenuItem onClick={() => nav("/studio")} className="gap-2">
             <Sparkles className="h-4 w-4 shrink-0" aria-hidden /> Profile Hub Studio

@@ -16,8 +16,16 @@ export function useWorkspaceContext() {
   return useQuery({ queryKey: WORKSPACE_QUERY_KEY, queryFn: () => fetchCtx(), staleTime: 30_000, retry: false });
 }
 
-/** Vercel-style switcher: Personal + every workspace the user belongs to. */
-export function WorkspaceSwitcher({ alwaysShow = false }: { alwaysShow?: boolean }) {
+export type Scope =
+  | { type: "personal"; userId: string | null }
+  | { type: "workspace"; workspaceId: string; role: "owner" | "admin" | "member" };
+
+/**
+ * Central scope: Personal or one workspace. Switching sets the server-side
+ * HttpOnly cookie, clears every cached query (no data crosses scopes) and
+ * reopens the same feature under the new scope URL.
+ */
+export function useScope() {
   const { t } = useI18n();
   const qc = useQueryClient();
   const navigate = useNavigate();
@@ -27,8 +35,12 @@ export function WorkspaceSwitcher({ alwaysShow = false }: { alwaysShow?: boolean
   const [busy, setBusy] = useState(false);
 
   const active = data?.workspaces.find((w) => w.id === data.activeWorkspaceId) ?? null;
+  const scope: Scope = active
+    ? { type: "workspace", workspaceId: active.id, role: active.role as "owner" | "admin" | "member" }
+    : { type: "personal", userId: null };
 
   const switchTo = async (workspaceId: string | null) => {
+    if ((active?.id ?? null) === workspaceId) return;
     setBusy(true);
     try {
       await setActive({ data: { workspaceId } });
@@ -58,6 +70,15 @@ export function WorkspaceSwitcher({ alwaysShow = false }: { alwaysShow?: boolean
     }
   };
 
+  return { scope, active, workspaces: data?.workspaces ?? [], switchTo, newWorkspace, busy };
+}
+
+/** Vercel-style switcher: Personal + every workspace the user belongs to. */
+export function WorkspaceSwitcher({ alwaysShow = false }: { alwaysShow?: boolean }) {
+  const { t } = useI18n();
+  const { active, workspaces, switchTo, newWorkspace, busy } = useScope();
+  const data = { workspaces };
+
   if (!alwaysShow && !data?.workspaces.length) return null;
 
   return (
@@ -77,7 +98,7 @@ export function WorkspaceSwitcher({ alwaysShow = false }: { alwaysShow?: boolean
           <User className="mr-2 h-4 w-4" /> {t("workspace.personal")}
           {!active && <Check className="ml-auto h-4 w-4" />}
         </DropdownMenuItem>
-        {data && data.workspaces.length > 0 && (
+        {data.workspaces.length > 0 && (
           <>
             <DropdownMenuSeparator />
             <DropdownMenuLabel className="text-xs text-muted-foreground">{t("workspace.list")}</DropdownMenuLabel>
