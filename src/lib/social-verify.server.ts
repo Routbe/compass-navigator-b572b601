@@ -161,7 +161,7 @@ function followersFromText(text: string): number | null {
 
 /** Haalt bio-tekst + volgeraantal op voor één sociaal account. */
 export async function fetchSnapshot(platform: SocialPlatform, username: string): Promise<Snapshot> {
-  const handle = username.replace(/^@/, "");
+  let handle = username.replace(/^@/, "");
 
   if (platform === "github") {
     const user = await fetchJson<{ bio?: string | null; blog?: string | null; followers?: number }>(
