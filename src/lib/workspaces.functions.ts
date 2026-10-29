@@ -54,9 +54,15 @@ export const createWorkspace = createServerFn({ method: "POST" })
   .handler(async ({ data, context }) => {
     const { sql } = await import("@/lib/neon");
     const { setActiveWorkspaceCookie } = await import("./workspaces.server");
-    let base = slugify(data.name);
-    if (base.length < 2) base = "team";
-    const slug = `${base.slice(0, 32)}-${Math.random().toString(36).slice(2, 6)}`;
+    const { workspaceSlug } = await import("./workspace-rules");
+    // rout.be/w/<naam><2 cijfers>; probeer vrije cijfers tot het adres uniek is.
+    let slug = "";
+    for (let i = 0; i < 12 && !slug; i++) {
+      const candidate = workspaceSlug(data.name, Math.floor(Math.random() * 100));
+      const taken = (await sql`select 1 from public.workspaces where slug = ${candidate} limit 1`) as unknown[];
+      if (!taken.length) slug = candidate;
+    }
+    if (!slug) throw new Error("Geen vrij workspace-adres gevonden. Kies een andere naam.");
     const [res] = (await sql.transaction([
       sql`insert into public.workspaces (name, slug) values (${data.name}, ${slug})`,
       sql`insert into public.workspace_members (workspace_id, user_id, role)
