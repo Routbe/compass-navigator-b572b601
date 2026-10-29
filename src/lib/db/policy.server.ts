@@ -18,6 +18,12 @@ type Access = {
   publicRead?: boolean;
   /** Columns an anonymous or non-owner reader may never receive. */
   denyColumns?: string[];
+  /**
+   * Table carries `workspace_id`: personal scope requires `workspace_id IS NULL`,
+   * workspace scope requires the exact active workspace (membership checked
+   * server-side from the HttpOnly cookie). Rows never cross scopes.
+   */
+  workspaceScoped?: boolean;
 };
 
 const TABLES: Record<string, Access> = {
@@ -28,7 +34,7 @@ const TABLES: Record<string, Access> = {
   badges: { ops: ["select"], owner: null, publicRead: true },
   links: { ops: ["select", "insert", "update", "delete"], owner: "profile_id" },
   saved_qrs: { ops: ["select", "insert", "update", "delete"], owner: "user_id" },
-  tracked_qrs: { ops: ["select", "insert", "update", "delete"], owner: "user_id" },
+  tracked_qrs: { ops: ["select", "insert", "update", "delete"], owner: "user_id", workspaceScoped: true },
   user_badges: { ops: ["select", "delete"], owner: "user_id" },
   badge_events: { ops: ["select"], owner: "user_id" },
   notifications: { ops: ["select", "update", "delete"], owner: "user_id" },
@@ -130,15 +136,20 @@ export async function authorizeQuery(
     const filter = descriptor.filters.find((f) => f.column === "tracked_qr_id");
     if (!filter) return { ok: false, message: "qr_scans requires a tracked_qr_id filter" };
     const ids = (Array.isArray(filter.value) ? filter.value : [filter.value]).map(String);
-    const rows = (await sql.query(
-      `select id from public.tracked_qrs where user_id = $1 and id = any($2)`,
-      [userId, ids],
-    )) as { id: string }[];
+    const { resolveActiveWorkspace } = await import("@/lib/workspaces.server");
+    const { workspaceId } = await resolveActiveWorkspace(userId);
+    const rows = (workspaceId
+      ? await sql.query(`select id from public.tracked_qrs where workspace_id = $1 and id = any($2)`, [workspaceId, ids])
+      : await sql.query(
+          `select id from public.tracked_qrs where user_id = $1 and workspace_id is null and id = any($2)`,
+          [userId, ids],
+        )) as { id: string }[];
     if (rows.length !== ids.length) return { ok: false, message: "Not your tracked QR" };
     return { ok: true, descriptor };
   }
 
   const owner = access.owner!;
+  if (access.workspaceScoped) return scopeToWorkspace(descriptor, owner, userId);
   if (descriptor.table === "profiles" && descriptor.action === "select") {
     // Public profile reads stay open; private columns are not exposed by the
     // views this app reads, so no extra scoping is applied here.
@@ -159,6 +170,41 @@ export async function authorizeQuery(
     scoped.filters = descriptor.filters;
   }
   return { ok: true, descriptor: scoped };
+}
+
+async function scopeToWorkspace(
+  descriptor: QueryDescriptor,
+  owner: string,
+  userId: string,
+): Promise<PolicyDecision> {
+  const { resolveActiveWorkspace } = await import("@/lib/workspaces.server");
+  const { workspaceId } = await resolveActiveWorkspace(userId);
+  const writable = descriptor.action === "select" || descriptor.action === "delete" ? descriptor : stripProtected(descriptor);
+  // Client may never pick its own owner or workspace.
+  const clientFilters = descriptor.filters.filter((f) => f.column !== owner && f.column !== "workspace_id");
+  const scopeFilters: QueryDescriptor["filters"] = workspaceId
+    ? [{ op: "eq", column: "workspace_id", value: workspaceId }]
+    : [
+        { op: "eq", column: owner, value: userId },
+        { op: "is", column: "workspace_id", value: null },
+      ];
+  if (writable.action === "insert" || writable.action === "upsert") {
+    const rows = Array.isArray(writable.values) ? writable.values : [writable.values ?? {}];
+    return {
+      ok: true,
+      descriptor: {
+        ...writable,
+        filters: clientFilters,
+        values: rows.map((row) => ({ ...(row as Record<string, unknown>), [owner]: userId, workspace_id: workspaceId })) as QueryDescriptor["values"],
+      },
+    };
+  }
+  let values = writable.values;
+  if (writable.action === "update" && values && !Array.isArray(values)) {
+    const { [owner]: _o, workspace_id: _w, ...rest } = values as Record<string, unknown>;
+    values = rest as QueryDescriptor["values"];
+  }
+  return { ok: true, descriptor: { ...writable, values, filters: [...clientFilters, ...scopeFilters] } };
 }
 
 export function authorizeRpc(
