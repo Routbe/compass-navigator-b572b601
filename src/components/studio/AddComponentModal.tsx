@@ -6,7 +6,6 @@ import { useServerFn } from "@tanstack/react-start";
 import { toast } from "sonner";
 import { ArrowLeft, AtSign, BadgeCheck, ChevronRight, Clapperboard, Briefcase, Link2, MessageCircle, Radio, Search, LayoutGrid } from "lucide-react";
 import { BrandIcon } from "@/components/integrations/BrandIcon";
-import { lookupBrandIcon } from "@/utils/brandIcons";
 import { INTEGRATIONS, integrationById, type Integration } from "@/lib/integrations-catalog";
 import { getMyIntegrations, saveIntegration } from "@/lib/integrations.functions";
 import { getMyPresence, setSpotifyPresenceVisible } from "@/lib/presence.functions";
