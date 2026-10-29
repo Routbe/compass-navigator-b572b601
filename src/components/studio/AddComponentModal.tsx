@@ -304,7 +304,7 @@ export function AddComponentModal({ open, onClose, onAdd, handle, onWidget }: Pr
   return (
     <>
       <Dialog open={open} onOpenChange={(v) => !v && close()}>
-        <DialogContent className="flex max-h-[90vh] flex-col gap-3 overflow-hidden p-4 sm:max-w-2xl sm:p-6">
+        <DialogContent className="flex h-[85dvh] max-h-[90dvh] sm:h-[80vh] flex-col gap-3 overflow-hidden p-4 sm:max-w-2xl sm:p-6">
           <DialogHeader>
             <DialogTitle>{title}</DialogTitle>
           </DialogHeader>
