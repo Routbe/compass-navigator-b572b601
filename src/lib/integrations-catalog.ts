@@ -51,7 +51,7 @@ export const INTEGRATIONS: Integration[] = [
   soon("kick", "Kick", "streaming", "siKick"),
   // Socials
   { id: "bluesky", label: "Bluesky", category: "socials", icon: "siBluesky", mode: "handle", placeholder: "naam.bsky.social", sso: "bluesky" },
-  { id: "wsocial", label: "W.social", category: "socials", icon: "custom:wsocial", mode: "handle", placeholder: "gebruikersnaam of eigen domein" },
+  { id: "wsocial", label: "wsocial.eu", category: "socials", icon: "custom:wsocial", mode: "handle", placeholder: "gebruikersnaam of eigen domein" },
   soon("instagram", "Instagram", "socials", "siInstagram"),
   soon("tiktok", "TikTok", "socials", "siTiktok"),
   soon("x", "X", "socials", "siX"),

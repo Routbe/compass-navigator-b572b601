@@ -169,7 +169,7 @@ export function LiveIntegrations() {
   return (
     <div className="space-y-2">
       <p className="text-xs text-muted-foreground">
-        Live kaarten verschijnen alleen bij recent gebruik: Spotify tijdens het afspelen; GitHub, GitLab, Mastodon, Bluesky en W.social bij activiteit in de laatste 24 uur.
+        Live kaarten verschijnen alleen bij recent gebruik: Spotify tijdens het afspelen; GitHub, GitLab, Mastodon, Bluesky en wsocial.eu bij activiteit in de laatste 24 uur.
       </p>
       {!spotify && !snapchat.data?.snap && rows.length === 0 && (
         <p className="rounded-xl border border-dashed border-border p-3 text-xs text-muted-foreground">

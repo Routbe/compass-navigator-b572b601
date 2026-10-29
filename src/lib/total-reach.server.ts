@@ -11,7 +11,7 @@ import {
 
 /**
  * Total reach, built only from the member's Connections Hub integrations.
- * Open platforms (Bluesky, W.social, GitHub, YouTube) are fetched from public
+ * Open platforms (Bluesky, wsocial.eu, GitHub, YouTube) are fetched from public
  * sources; everything else counts only through a manual number per integration.
  */
 

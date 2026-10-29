@@ -96,7 +96,7 @@ export function TotalReachModal({
         <DialogHeader>
           <DialogTitle>Totaal bereik / volgers tonen</DialogTitle>
           <DialogDescription>
-            Toon één compacte badge met je totale bereik over al je sociale accounts. Telt enkel je koppelingen uit Verbindingen &amp; Integraties. Bluesky, W.social,
+            Toon één compacte badge met je totale bereik over al je sociale accounts. Telt enkel je koppelingen uit Verbindingen &amp; Integraties. Bluesky, wsocial.eu,
             GitHub en YouTube worden automatisch opgehaald; andere platformen vul je zelf in.
           </DialogDescription>
         </DialogHeader>

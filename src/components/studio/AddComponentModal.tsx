@@ -148,13 +148,7 @@ const ALL_ITEMS = COMPONENT_LIBRARY.flatMap((g) => g.items);
 const SOCIAL_KINDS = BLOCK_KINDS.filter((k) => k.category === "socials" || k.category === "featured" || Boolean(k.tags?.length));
 
 function SocialLogo({ kind }: { kind: string }) {
-  const icon = lookupBrandIcon(kind);
-  if (!icon) return <SocialPlatformIcon source={kind} className="h-6 w-6 text-muted-foreground" />;
-  return (
-    <svg viewBox={icon.viewBox ?? "0 0 24 24"} className="h-6 w-6 shrink-0" aria-hidden style={{ fill: icon.color }}>
-      <path d={icon.path} />
-    </svg>
-  );
+  return <SocialPlatformIcon source={kind} kind={kind} className="h-6 w-6" />;
 }
 
 /**

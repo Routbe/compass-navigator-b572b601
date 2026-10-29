@@ -263,6 +263,9 @@ export function SocialPlatformIcon({
   const [faviconFailed, setFaviconFailed] = useState(false);
   const Icon = getSocialPlatformIcon(source);
   const brand = isEmailLike(source) ? null : lookupBrandIcon(source) ?? (kind ? lookupBrandIcon(kind) : null);
+  if (brand?.image) {
+    return <img src={brand.image} alt="" aria-hidden className={cn("h-5 w-5 shrink-0 rounded-[22%] object-contain", className)} />;
+  }
   if (brand) {
     // Officieel merkteken altijd tekenen, nooit een generieke wereldbol/link.
     return (

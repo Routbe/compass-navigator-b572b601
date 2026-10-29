@@ -79,6 +79,8 @@ export interface BrandIcon {
   path: string;
   /** Officiële merkkleur (hex, inclusief #). */
   color: string;
+  /** Lokaal officieel logobestand; heeft voorrang op het pad. */
+  image?: string;
   /**
    * Afwijkende viewBox voor paden die niet op 24×24 getekend zijn
    * (bijv. het lokale merkasset /img/brand/eyou.svg, 113×106).
@@ -107,7 +109,7 @@ const GOOGLE_PATH =
 /**
  * Soevereine platformen die simple-icons niet dekt, als eigen vector.
  * eYou.social: het canonieke merkpad uit public/img/brand/eyou.svg
- * (113×106 bronsbestand, geen hertekende vector). W.social: het hoekige
+ * (113×106 bronsbestand, geen hertekende vector). wsocial.eu: het hoekige
  * W-merkteken. Beide in hun officiële merkkleur.
  */
 const EYOU_PATH =
@@ -128,8 +130,9 @@ export const BRAND_ICONS: Record<string, BrandIcon> = {
     color: "#0A80FF",
     viewBox: "0 0 113 106",
   },
-  wsocial: { title: "W.social", path: WSOCIAL_PATH, color: "#0ea5a4" },
-  "w.social": { title: "W.social", path: WSOCIAL_PATH, color: "#0ea5a4" },
+  wsocial: { title: "wsocial.eu", path: WSOCIAL_PATH, color: "#1E66F5", image: "/icons/wsocial.png" },
+  "wsocial.eu": { title: "wsocial.eu", path: WSOCIAL_PATH, color: "#1E66F5", image: "/icons/wsocial.png" },
+  "w.social": { title: "wsocial.eu", path: WSOCIAL_PATH, color: "#1E66F5", image: "/icons/wsocial.png" },
   pixelfed: from(siPixelfed),
   bluesky: from(siBluesky),
   bsky: from(siBluesky),
