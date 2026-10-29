@@ -161,7 +161,7 @@ function followersFromText(text: string): number | null {
 
 /** Haalt bio-tekst + volgeraantal op voor één sociaal account. */
 export async function fetchSnapshot(platform: SocialPlatform, username: string): Promise<Snapshot> {
-  const handle = username.replace(/^@/, "");
+  let handle = username.replace(/^@/, "");
 
   if (platform === "github") {
     const user = await fetchJson<{ bio?: string | null; blog?: string | null; followers?: number }>(
@@ -173,9 +173,9 @@ export async function fetchSnapshot(platform: SocialPlatform, username: string):
     };
   }
 
-  if (platform === "mastodon" || platform === "wsocial") {
+  if (platform === "mastodon") {
     const [localHandle, host] = handle.split("@");
-    const instance = host || (platform === "wsocial" ? "w.social" : "mastodon.social");
+    const instance = host || "mastodon.social";
     const { isPublicHost } = await import("./open-web-rules");
     if (!isPublicHost(instance)) throw new Error("invalid_host");
     const account = await fetchJson<{
@@ -192,7 +192,9 @@ export async function fetchSnapshot(platform: SocialPlatform, username: string):
     };
   }
 
-  if (platform === "bluesky") {
+  if (platform === "bluesky" || platform === "wsocial") {
+    // wsocial.eu draait op het AT Protocol: kale namen krijgen `.wsocial.eu`.
+    if (platform === "wsocial" && !handle.includes(".")) handle = `${handle}.wsocial.eu`;
     const profile = await fetchJson<{ description?: string; followersCount?: number }>(
       `https://public.api.bsky.app/xrpc/app.bsky.actor.getProfile?actor=${encodeURIComponent(handle)}`,
     );

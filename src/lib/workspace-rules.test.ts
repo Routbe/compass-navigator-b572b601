@@ -30,3 +30,12 @@ describe("workspace rules", () => {
     expect(slugify("Café Één BV")).toBe("cafe-een-bv");
   });
 });
+
+import { isValidWorkspaceSlug, workspaceSlug } from "./workspace-rules";
+describe("workspace address rout.be/w/<name>", () => {
+  it("ends in exactly 2 digits", () => expect(workspaceSlug("Acme Studio", 7)).toBe("acme-studio07"));
+  it("is at least 6 characters for short names", () => expect(workspaceSlug("AB", 42).length).toBeGreaterThanOrEqual(6));
+  it("rejects a slug without 2 trailing digits", () => expect(isValidWorkspaceSlug("acmeteam")).toBe(false));
+  it("rejects slugs shorter than 6", () => expect(isValidWorkspaceSlug("ab12")).toBe(false));
+  it("accepts a valid slug", () => expect(isValidWorkspaceSlug("acme42")).toBe(true));
+});

@@ -27,6 +27,24 @@ export default function Studio() {
   // Privacy Alias is the default; the verified profile is a premium tab.
   const [variant, setVariant] = useState<ProfileVariant>("alias");
   const [pageMode, setPageMode] = useState<PageMode>("profile");
+  // Uitkomst van de Snapchat-koppeling (?snapchat=…) zichtbaar maken.
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const snap = params.get("snapchat");
+    if (!snap) return;
+    const msg: Record<string, [boolean, string]> = {
+      connected: [true, "Snapchat is gekoppeld."],
+      cancelled: [false, "Snapchat-koppeling geannuleerd."],
+      not_configured: [false, "Snapchat is nog niet ingesteld door de beheerder."],
+      invalid_state: [false, "Koppeling verlopen. Probeer het opnieuw."],
+      in_use: [false, "Dit Snapchat-account is al aan een ander profiel gekoppeld."],
+    };
+    const [ok, text] = msg[snap] ?? [false, "Snapchat koppelen is mislukt. Probeer het opnieuw."];
+    void import("sonner").then(({ toast }) => (ok ? toast.success(text) : toast.error(text)));
+    params.delete("snapchat");
+    const qs = params.toString();
+    window.history.replaceState(null, "", `${window.location.pathname}${qs ? `?${qs}` : ""}`);
+  }, []);
   useEffect(() => {
     if (new URLSearchParams(window.location.search).get("page") === "booking") setPageMode("booking");
   }, []);

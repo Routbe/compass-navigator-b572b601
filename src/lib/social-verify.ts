@@ -24,7 +24,7 @@ export const PLATFORM_LABEL: Record<SocialPlatform, string> = {
   github: "GitHub",
   mastodon: "Mastodon",
   bluesky: "Bluesky",
-  wsocial: "W Social",
+  wsocial: "wsocial.eu",
 };
 
 /** Platformen met een open API: verificatie is direct, zonder scraping. */

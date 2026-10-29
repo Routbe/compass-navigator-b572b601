@@ -6,7 +6,6 @@ import { useServerFn } from "@tanstack/react-start";
 import { toast } from "sonner";
 import { ArrowLeft, AtSign, BadgeCheck, ChevronRight, Clapperboard, Briefcase, Link2, MessageCircle, Radio, Search, LayoutGrid } from "lucide-react";
 import { BrandIcon } from "@/components/integrations/BrandIcon";
-import { lookupBrandIcon } from "@/utils/brandIcons";
 import { INTEGRATIONS, integrationById, type Integration } from "@/lib/integrations-catalog";
 import { getMyIntegrations, saveIntegration } from "@/lib/integrations.functions";
 import { getMyPresence, setSpotifyPresenceVisible } from "@/lib/presence.functions";
@@ -148,13 +147,7 @@ const ALL_ITEMS = COMPONENT_LIBRARY.flatMap((g) => g.items);
 const SOCIAL_KINDS = BLOCK_KINDS.filter((k) => k.category === "socials" || k.category === "featured" || Boolean(k.tags?.length));
 
 function SocialLogo({ kind }: { kind: string }) {
-  const icon = lookupBrandIcon(kind);
-  if (!icon) return <SocialPlatformIcon source={kind} className="h-6 w-6 text-muted-foreground" />;
-  return (
-    <svg viewBox={icon.viewBox ?? "0 0 24 24"} className="h-6 w-6 shrink-0" aria-hidden style={{ fill: icon.color }}>
-      <path d={icon.path} />
-    </svg>
-  );
+  return <SocialPlatformIcon source={kind} kind={kind} className="h-6 w-6" />;
 }
 
 /**
@@ -311,7 +304,7 @@ export function AddComponentModal({ open, onClose, onAdd, handle, onWidget }: Pr
   return (
     <>
       <Dialog open={open} onOpenChange={(v) => !v && close()}>
-        <DialogContent className="flex max-h-[90vh] flex-col gap-3 overflow-hidden p-4 sm:max-w-2xl sm:p-6">
+        <DialogContent className="flex h-[85dvh] max-h-[90dvh] sm:h-[80vh] flex-col gap-3 overflow-hidden p-4 sm:max-w-2xl sm:p-6">
           <DialogHeader>
             <DialogTitle>{title}</DialogTitle>
           </DialogHeader>

@@ -23,6 +23,7 @@ import { AvatarUpload } from "@/components/settings/AvatarUpload";
 import { PhoneVerification } from "@/components/settings/PhoneVerification";
 import { IdentityVerification } from "@/components/settings/IdentityVerification";
 import { IdentitiesPanel } from "@/components/settings/IdentitiesPanel";
+import { SocialIdentityVerify } from "@/components/settings/SocialIdentityVerify";
 import { FreezeAccountPanel } from "@/components/settings/FreezeAccountPanel";
 import { MergeAccountWizard } from "@/components/settings/MergeAccountWizard";
 import { ConvertToWorkspaceWizard } from "@/components/settings/ConvertToWorkspaceWizard";
@@ -426,6 +427,8 @@ export default function AccountSettings() {
           <PhoneVerification />
 
           <IdentityVerification />
+
+          <SocialIdentityVerify />
 
           <section className="space-y-3 rounded-2xl border border-border bg-card p-4 sm:p-5">
             <h2 className="flex items-center gap-2 text-lg font-medium">
